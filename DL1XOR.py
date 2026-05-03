@@ -1,0 +1,161 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "gpuType": "T4",
+      "authorship_tag": "ABX9TyNnJoe0gukafIJmn77opi+G",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    },
+    "accelerator": "GPU"
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/ayesha0859/DL/blob/main/DL1XOR.py\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "b7f6b30c"
+      },
+      "source": [
+        "### Implementation of XOR Gate using Backpropagation"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "a2f5e958"
+      },
+      "source": [
+        "import numpy as np\n",
+        "\n",
+        "def sigmoid(x):\n",
+        "    return 1 / (1 + np.exp(-x))\n",
+        "\n",
+        "def sigmoid_derivative(x):\n",
+        "    return x * (1 - x)"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "ff0ce270"
+      },
+      "source": [
+        "X = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])\n",
+        "y = np.array([[0], [1], [1], [0]])"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "cc61fe6f"
+      },
+      "source": [
+        "epochs = 10000\n",
+        "learning_rate = 0.1\n",
+        "input_neurons = 2\n",
+        "hidden_neurons = 2\n",
+        "output_neurons = 1\n",
+        "\n",
+        "wh = np.random.uniform(size=(input_neurons, hidden_neurons))\n",
+        "bh = np.random.uniform(size=(1, hidden_neurons))\n",
+        "wout = np.random.uniform(size=(hidden_neurons, output_neurons))\n",
+        "bout = np.random.uniform(size=(1, output_neurons))"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "84603eae"
+      },
+      "source": [
+        "for i in range(epochs):\n",
+        "    # Forward Propagation\n",
+        "    hidden_layer_input = np.dot(X, wh) + bh\n",
+        "    hidden_layer_output = sigmoid(hidden_layer_input)\n",
+        "    output_layer_input = np.dot(hidden_layer_output, wout) + bout\n",
+        "    output = sigmoid(output_layer_input)\n",
+        "\n",
+        "    # Backpropagation\n",
+        "    E = y - output\n",
+        "    slope_output_layer = sigmoid_derivative(output)\n",
+        "    slope_hidden_layer = sigmoid_derivative(hidden_layer_output)\n",
+        "    d_output = E * slope_output_layer\n",
+        "    error_at_hidden_layer = np.dot(d_output, wout.T)\n",
+        "    d_hidden_layer = error_at_hidden_layer * slope_hidden_layer\n",
+        "\n",
+        "    wout += np.dot(hidden_layer_output.T, d_output) * learning_rate\n",
+        "    bout += np.sum(d_output, axis=0, keepdims=True) * learning_rate\n",
+        "    wh += np.dot(X.T, d_hidden_layer) * learning_rate\n",
+        "    bh += np.sum(d_hidden_layer, axis=0, keepdims=True) * learning_rate"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "24f483fa"
+      },
+      "source": [
+        "### Predictions after training"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "0bcd0196",
+        "outputId": "7549b011-6755-4c11-ede8-e8117054424b"
+      },
+      "source": [
+        "hidden_layer_input = np.dot(X, wh) + bh\n",
+        "hidden_layer_output = sigmoid(hidden_layer_input)\n",
+        "output_layer_input = np.dot(hidden_layer_output, wout) + bout\n",
+        "output = sigmoid(output_layer_input)\n",
+        "\n",
+        "print(\"Predicted Output:\")\n",
+        "print(output.round())"
+      ],
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Predicted Output:\n",
+            "[[0.]\n",
+            " [0.]\n",
+            " [1.]\n",
+            " [1.]]\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
